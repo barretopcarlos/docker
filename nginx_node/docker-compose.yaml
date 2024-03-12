@@ -1,0 +1,61 @@
+version: '3'
+
+services:
+
+  app:
+    image: app
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    container_name: app
+    entrypoint: sh -c "npm install && node index.js"
+    networks:
+      - node-network
+    volumes:
+      - ./node:/app
+    tty: true
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+
+  db:
+    image: mysql:5.7
+    command: --innodb-use-native-aio=0
+    container_name: db
+    restart: always
+    tty: true
+    volumes:
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./mysql/database:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=nodedb
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - node-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    image: nginx
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    networks:
+      - node-network
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    command: /bin/sh -c "exec nginx -g 'daemon off;'"
+
+networks:
+  node-network:
+    driver: bridge
