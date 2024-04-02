@@ -1,9 +1,6 @@
 # Repositorio Docker FullCycle
 Repositório criado para armazenar documentações e desafios em docker
 
-
-# Desafios
-
 -- IMAGEM GO
 
 - Link para repositorio no Docker Hub com a imagem em GO: https://hub.docker.com/r/carlospbarreto/container-golang
@@ -14,7 +11,6 @@ Repositório criado para armazenar documentações e desafios em docker
 2. Vá até o diretório nginx_node do projeto clonado:\
 3. Execute `docker-compose up -d` em um terminal com docker para iniciar os contêineres.
 4. Acesse seu navegador em `http://localhost:8080`.
-
 
 ## Autor
 
